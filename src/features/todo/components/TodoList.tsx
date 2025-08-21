@@ -4,7 +4,8 @@ import type { Todo } from '../types';
 
 function TodoList() {
     // Hooks
-    const {todos, loading, error, editTodo} = useTodos();
+    // const {todos, loading, error, editTodo} = useTodos();
+    const {todos, editTodo} = useTodos();
 
     // States
 

@@ -1,4 +1,4 @@
-import { TodoDashboard } from "@features/todo";
+import { TodoDashboard, TodoList } from "@features/todo";
 
 function Home() {
   return (
@@ -14,6 +14,7 @@ function Home() {
 
       <main className="container mx-auto pt-6">
         <TodoDashboard/>
+        <TodoList/>
       </main>
     </>
   );

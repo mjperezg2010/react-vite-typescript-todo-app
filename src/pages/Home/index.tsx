@@ -1,6 +1,20 @@
+import { useEffect } from "react";
 import { TodoDashboard, TodoList } from "@features/todo";
+import { useTodos } from "@features/todo/useTodos";
+import { useToast } from "@hooks/useToast";
 
 function Home() {
+  // Hooks
+  const {todos,error, toggleCompleted} = useTodos()
+  const { showToast } = useToast()
+
+  // Effects
+  useEffect(() => {
+    if (error) {
+      showToast(error, "error")
+    }
+  }, [error, showToast])
+
   return (
     <>
       <div className="navbar border-b">
@@ -13,8 +27,13 @@ function Home() {
       </div>
 
       <main className="container mx-auto pt-6">
-        <TodoDashboard/>
-        <TodoList/>
+        <TodoDashboard
+          todos={todos}
+        />
+        <TodoList 
+          todos={todos} 
+          toggleCompleted={toggleCompleted}
+        />
       </main>
     </>
   );

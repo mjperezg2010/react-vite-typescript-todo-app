@@ -1,5 +1,5 @@
 // function names convention: edit,remove,add,get
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import type { Todo } from "./types"
 import { fetchTodos,createTodo,updateTodo,deleteTodo } from "./api"
 
@@ -7,6 +7,11 @@ export function useTodos() {
     const [todos, setTodos] = useState<Todo[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
+
+    const todosRef = useRef<Todo[]>([])
+    useEffect(() => {
+        todosRef.current = todos
+    }, [todos])
 
     useEffect(() => {
         async function loadTodos() {
@@ -63,27 +68,44 @@ export function useTodos() {
     } 
 
     // Edits the todo optimistically (UI updates before server confirmation)
-    const editTodoOptimistic = async (updatedTodo: Todo) => {
-        const previous = todos
-
-        setTodos(prevTodos => prevTodos.map(t => (t.id === updatedTodo.id ? updatedTodo : t)))
-
+    const editTodoOptimistic = useCallback(async (updatedTodo: Todo) => {
+        let previous: Todo[] = []
+        setTodos(prev => {
+            previous = prev
+            return prev.map(t => (t.id === updatedTodo.id ? updatedTodo : t))
+        })
         try {
+            console.log("Updating todo optimistically", updatedTodo)
             await updateTodo(updatedTodo)
         } catch (error) {
             // Roll back if server call fails
             setTodos(previous)
             setError("Failed to update todo (reverted changes)")
         }
-    }
+    }, [])
 
-    // Marks todo as completed optimistically
-    const toggleCompleted = async (id: number) => {
-        const current = todos.find(t => t.id === id)
+    // Marks todo as completed optimistically with a stable callback
+    const toggleCompleted = useCallback(async (id: number) => {
+        // Use todosRef because `todos` are not stable in this callback
+        const previous = todosRef.current
+        const current = previous.find(t => t.id === id)
         if (!current) return
         const updated: Todo = { ...current, completed: !current.completed } as Todo
-        await editTodoOptimistic(updated)
-    }
+
+        // Optimistic UI update
+        setTodos(prev => prev.map(t => (t.id === id ? updated : t)))
+
+        // Now `updated` is safely available for logs and API calls
+        console.log("Toggling todo optimistically", updated)
+
+        try {
+            await updateTodo(updated)
+        } catch (error) {
+            // Roll back if server call fails
+            setTodos(previous)
+            setError("Failed to update todo (reverted changes)")
+        }
+    }, [])
 
        
 

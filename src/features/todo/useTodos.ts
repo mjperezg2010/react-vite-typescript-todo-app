@@ -95,9 +95,6 @@ export function useTodos() {
         // Optimistic UI update
         setTodos(prev => prev.map(t => (t.id === id ? updated : t)))
 
-        // Now `updated` is safely available for logs and API calls
-        console.log("Toggling todo optimistically", updated)
-
         try {
             await updateTodo(updated)
         } catch (error) {

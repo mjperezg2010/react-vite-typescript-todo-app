@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { Todo } from '../types'
 import { TodosBlock } from './TodosBlock'
+import styles from './TodoList.module.css'
 
 type Props = {
   todos: Todo[];
@@ -20,8 +21,11 @@ function TodoList({todos, toggleCompleted}: Props) {
 
     return (<>
       {/* name of each tab group should be unique */}
-      <div className="tabs tabs-border max-w-xl mx-auto">
-        <input type="radio" name="todos_tabs" className="tab" aria-label="Pending Tasks" defaultChecked/>
+      <div className={`tabs tabs-border max-w-xl mx-auto ${styles.tabsRed}`}>
+        <input type="radio" role="tab"
+          name="todos_tabs" className="tab"
+          aria-label="Pending Tasks" defaultChecked
+        />
           <div className="tab-content border-base-300 bg-base-100 p-2">
             <TodosBlock
               title="Pending tasks"
@@ -31,7 +35,13 @@ function TodoList({todos, toggleCompleted}: Props) {
             />
           </div>
 
-          <input type="radio" name="todos_tabs" className="tab" aria-label="Completed Tasks"  />
+          <input
+            type="radio"
+            role="tab"
+            name="todos_tabs"
+            className="tab"
+            aria-label="Completed Tasks"
+          />
           <div className="tab-content border-base-300 bg-base-100 p-2">
             <TodosBlock
               title="Completed tasks"
@@ -41,7 +51,13 @@ function TodoList({todos, toggleCompleted}: Props) {
             />
           </div>
 
-          <input type="radio" name="todos_tabs" className="tab" aria-label="All Tasks" />
+          <input
+            type="radio"
+            role="tab"
+            name="todos_tabs"
+            className="tab"
+            aria-label="All Tasks"
+          />
           <div className="tab-content border-base-300 bg-base-100 p-2">
             <TodosBlock
               title="All tasks"

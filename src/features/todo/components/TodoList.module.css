@@ -1,0 +1,4 @@
+.tabsRed :global(.tab:checked) {
+  border-color: var(--color-primary) !important; /* primary border */
+  color: var(--color-primary) !important;        /* primary text */
+}

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { TodoDashboard, TodoList,NewTodoModal } from "@features/todo";
 import { useTodos } from "@features/todo/useTodos";
 import { useToast } from "@hooks/useToast";
-// import { todo } from "node:test";
 
 function Home() {
   // Hooks
@@ -31,7 +30,7 @@ function Home() {
           <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>New Task</button>
         </div>
       </div>
-
+      
       <NewTodoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import Modal from "@components/Modal";
+import { Modal } from "@components";
 
 interface Props {
   isOpen: boolean;
@@ -8,7 +7,7 @@ interface Props {
   onCreate: (todo: { title: string; description?: string; dueDate?: string }) => void;
 }
 
-function NewTodoModal({ isOpen, onClose, onCreate }:Props){
+function NewTodoModal({ isOpen, onClose, onCreate }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -37,11 +36,18 @@ function NewTodoModal({ isOpen, onClose, onCreate }:Props){
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel} title="New Todo" 
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCancel}
+      title="New Todo"
       actions={
         <>
-          <button type="button" className="btn btn-ghost" onClick={handleCancel}>Cancel</button>
-          <button type="submit" form="new-todo-form" className="btn btn-primary" disabled={!title.trim()}>Create</button>
+          <button type="button" className="btn btn-ghost" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button type="submit" form="new-todo-form" className="btn btn-primary" disabled={!title.trim()}>
+            Create
+          </button>
         </>
       }
     >
@@ -53,7 +59,7 @@ function NewTodoModal({ isOpen, onClose, onCreate }:Props){
             placeholder="Task Title"
             className="input input-primary"
             value={title}
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
             required
             autoFocus
           />
@@ -64,14 +70,22 @@ function NewTodoModal({ isOpen, onClose, onCreate }:Props){
             placeholder="Task Description"
             className="textarea textarea-primary"
             value={description}
-            onChange={e => setDescription(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="form-control mb-2">
+          <input
+            id="todo-date" 
+            type="datetime-local"
+            placeholder="Task Date/Time" 
+            className="input input-primary" 
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
         </div>
       </form>
     </Modal>
   );
-};
+}
 
 export { NewTodoModal };

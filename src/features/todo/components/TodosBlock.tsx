@@ -26,6 +26,8 @@ function TodosBlockComponent({
         <li className="list-row" key={todo.id}>
           <div className="flex items-center">
             <input
+              id={`todo-${title.replace(/\s+/g, '-').toLowerCase()}-${todo.id}`}
+              name={`todo-${title.replace(/\s+/g, '-').toLowerCase()}-${todo.id}`}
               type="checkbox"
               aria-label="Mark todo as completed"
               className="checkbox checkbox-sm checkbox-primary rounded-full"

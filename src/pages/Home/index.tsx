@@ -5,13 +5,13 @@ import { useToast } from "@hooks/useToast";
 
 function Home() {
   // Hooks
-  const {todos,error, toggleCompleted} = useTodos()
+  const {todos,error,loading, toggleCompleted,addTodo} = useTodos()
   const { showToast } = useToast()
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreateTodo = (todo: { title: string; description?: string; dueDate?: string }) => {
-    showToast(`Created todo: ${todo.title}`, "success");
-  }
+  // const handleCreateTodo = (todo: { title: string; description?: string; dueDate?: string }) => {
+  //   showToast(`Created todo: ${todo.title}`, "success");
+  // }
 
   // Effects
   useEffect(() => {
@@ -34,7 +34,8 @@ function Home() {
       <NewTodoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onCreate={handleCreateTodo}
+        createTodo={addTodo}
+        isLoading={loading}
       />
 
       <main className="container mx-auto pt-6">

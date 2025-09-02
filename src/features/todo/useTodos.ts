@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import type { Todo } from "./types"
 import { fetchTodos,createTodo,updateTodo,deleteTodo } from "./api"
+import { getTodoId } from "@utils/generateId"
 
 export function useTodos() {
     const [todos, setTodos] = useState<Todo[]>([])
@@ -27,13 +28,24 @@ export function useTodos() {
         loadTodos()
     }, [])
 
-    const addTodo = async(newTodo: Todo) => {
+    const addTodo = async(title:string,targetDate:string,targetTime:string,observation:string) => {
+        const newTodo:Todo = {
+            id:getTodoId(todos),
+            title,
+            targetDate,
+            targetTime,
+            completed:false,
+            observation
+
+        }
         setLoading(true)
         try {
             const response = await createTodo(newTodo)
             setTodos((prevTodos) => [...prevTodos, response])
+            return true
         } catch (error) {
             setError("Failed to add todo")
+            return false
         } finally {
             setLoading(false)
         }

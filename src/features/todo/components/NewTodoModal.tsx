@@ -1,37 +1,48 @@
 import React, { useState } from "react";
-import { Modal } from "@components";
+import { Modal,LoadingButton } from "@components";
+import { formatDate,nextHourDateTimeInput } from "@utils/date";
+import { useToast } from "@hooks/useToast";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (todo: { title: string; description?: string; dueDate?: string }) => void;
+  createTodo:(title:string,targetDate:string,targetTime:string,observation:string)=>Promise<boolean>;
+  isLoading:boolean;
+  // onCreate: (todo: { title: string; description?: string; dueDate?: string }) => void;
 }
 
-function NewTodoModal({ isOpen, onClose, onCreate }: Props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
+function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
+  // Hooks
+  const { showToast } = useToast()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // States
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [dueDate, setDueDate] = useState<string>(() => nextHourDateTimeInput());
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
       return;
     }
-    onCreate({
-      title: title.trim(),
-      description: description.trim() || undefined,
-      dueDate: dueDate || undefined,
-    });
+
+    const targetDate = formatDate(dueDate, "yyyy-MM-dd");
+    const targetTime = formatDate(dueDate, "HH:mm");
+    
+    const response = await createTodo(title.trim(), targetDate, targetTime, description.trim())
+
+    if(response) showToast("The new task successfully created!",'success') 
+
     setTitle("");
     setDescription("");
-    setDueDate("");
+    setDueDate(nextHourDateTimeInput());
     onClose();
   };
 
   const handleCancel = () => {
     setTitle("");
     setDescription("");
-    setDueDate("");
+    setDueDate(nextHourDateTimeInput());
     onClose();
   };
 
@@ -45,18 +56,26 @@ function NewTodoModal({ isOpen, onClose, onCreate }: Props) {
           <button type="button" className="btn btn-ghost" onClick={handleCancel}>
             Cancel
           </button>
-          <button type="submit" form="new-todo-form" className="btn btn-primary" disabled={!title.trim()}>
+          <LoadingButton
+            type="submit"
+            form="new-todo-form"
+            className="btn btn-primary"
+            loading={isLoading}
+            disabled={!title.trim()}
+          >
             Create
-          </button>
+          </LoadingButton>
         </>
       }
     >
       <form id="new-todo-form" onSubmit={handleSubmit}>
         <div className="form-control mb-2">
+          <label htmlFor="todo-title" className="label">
+            <span className="label-text">Title</span>
+          </label><br/>
           <input
             id="todo-title"
             type="text"
-            placeholder="Task Title"
             className="input input-primary"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -65,22 +84,27 @@ function NewTodoModal({ isOpen, onClose, onCreate }: Props) {
           />
         </div>
         <div className="form-control mb-2">
+          <label htmlFor="todo-description" className="label">
+            <span className="label-text">Description</span>
+          </label><br/>
           <textarea
             id="todo-description"
-            placeholder="Task Description"
             className="textarea textarea-primary"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="form-control mb-2">
+          <label htmlFor="todo-date" className="label">
+            <span className="label-text">Due date & time</span>
+          </label><br/>
           <input
             id="todo-date" 
             type="datetime-local"
-            placeholder="Task Date/Time" 
             className="input input-primary" 
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+            required
           />
         </div>
       </form>

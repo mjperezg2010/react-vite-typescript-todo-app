@@ -65,19 +65,17 @@ export function useTodos() {
         }
     }
 
-    const removeTodo = async(toDeleteTodoId: number) => {
+    const removeTodo = useCallback(async (toDeleteTodoId: number) => {
         setLoading(true)
         try{
             const response = await deleteTodo(toDeleteTodoId)
             setTodos((prevTodos) => prevTodos.filter(t => t.id !== response))
-
-        }catch (error) {
+        } catch (error) {
             setError("Failed to delete todo")
-        }
-        finally {
+        } finally {
             setLoading(false)
         }
-    } 
+    }, [])
 
     // Edits the todo optimistically (UI updates before server confirmation)
     const editTodoOptimistic = useCallback(async (updatedTodo: Todo) => {
@@ -116,7 +114,6 @@ export function useTodos() {
         }
     }, [])
 
-       
 
     return { 
         // state

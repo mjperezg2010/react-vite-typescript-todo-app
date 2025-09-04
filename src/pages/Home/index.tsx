@@ -5,7 +5,7 @@ import { useToast } from "@hooks/useToast";
 
 function Home() {
   // Hooks
-  const {todos,error,loading, toggleCompleted,addTodo} = useTodos()
+  const {todos,error,loading, toggleCompleted,addTodo,removeTodo} = useTodos()
   const { showToast } = useToast()
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,7 +44,10 @@ function Home() {
         />
         <TodoList 
           todos={todos} 
+          isLoading={loading}
           toggleCompleted={toggleCompleted}
+          removeTodo={removeTodo}
+          
         />
       </main>
     </>

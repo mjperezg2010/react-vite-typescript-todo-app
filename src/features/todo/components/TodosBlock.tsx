@@ -1,25 +1,32 @@
 import { formatDate } from '@utils/date'
-import { memo, useState } from 'react'
+import { memo, useState, useEffect } from 'react'
 import type { Todo } from '../types'
 
 import { parse, isBefore, isValid, set } from 'date-fns'
+import { TrashIcon } from "@heroicons/react/24/solid";
+import { LoadingButton } from '@components'
 
 type Props = {
   title: string;
   items: Todo[];
-  toggleCompleted: (id: number) => void;
   emptyText: string;
+  isLoading:boolean;
+  toggleCompleted: (id: number) => void;
+  removeTodo: (id: number) => void;  
 }
 
 function TodosBlockComponent({
   title,
   items,
-  toggleCompleted,
   emptyText,
+  isLoading,
+  toggleCompleted,
+  removeTodo  
 }: Props) {
 
   // States
   const [fadingId, setFadingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   // Helper
   const isOverdue = (t: Todo) => {
@@ -45,6 +52,12 @@ function TodosBlockComponent({
     const due = set(baseDate, { hours, minutes, seconds: 0, milliseconds: 0 });
     return isBefore(due, new Date());
   };
+
+  useEffect(() => {
+    if (!isLoading) {
+      setDeletingId(null);
+    }
+  }, [isLoading]);
 
   return items.length > 0 ? (
     <ul className="list bg-base-100 rounded-box shadow-md max-w-xl mx-auto mt-4">
@@ -94,6 +107,22 @@ function TodosBlockComponent({
           >
             Observation: {todo.observation || 'No observations provided.'}
           </p>
+          <div className="ml-2">
+            <div className="tooltip" data-tip="Delete">
+              <LoadingButton
+                className="btn btn-circle"
+                aria-label="Delete todo"
+                onClick={() => {
+                  setDeletingId(todo.id);
+                  removeTodo(todo.id);
+                }}
+                loading={isLoading && deletingId === todo.id}
+                variant="icon"
+              >
+                <TrashIcon className="h-4 w-4" />
+              </LoadingButton>
+            </div>
+          </div>
         </li>
       ))}
     </ul>

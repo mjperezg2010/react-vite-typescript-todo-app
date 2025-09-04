@@ -62,6 +62,7 @@ function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
             className="btn btn-primary"
             loading={isLoading}
             disabled={!title.trim()}
+            hideChildrenWhenLoading
           >
             Create
           </LoadingButton>

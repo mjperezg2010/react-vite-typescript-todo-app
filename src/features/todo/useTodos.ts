@@ -58,8 +58,10 @@ export function useTodos() {
             setTodos((prevTodos) => prevTodos.map(t => 
                 t.id === response.id ? response : t
             ))
+            return true
         } catch (error) {
             setError("Failed to update todo")
+            return false
         } finally {
             setLoading(false)
         }

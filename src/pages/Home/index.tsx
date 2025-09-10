@@ -1,17 +1,39 @@
-import { useEffect, useState } from "react";
-import { TodoDashboard, TodoList,NewTodoModal } from "@features/todo";
+import { useEffect, useState, useCallback } from "react";
+import { TodoDashboard, TodoList,NewEditTodoModal } from "@features/todo";
 import { useTodos } from "@features/todo/useTodos";
 import { useToast } from "@hooks/useToast";
+import type { Todo } from "@features/todo/types";
 
 function Home() {
   // Hooks
-  const {todos,error,loading, toggleCompleted,addTodo,removeTodo} = useTodos()
+  const {todos,error,loading, toggleCompleted,addTodo,removeTodo,editTodo} = useTodos()
   const { showToast } = useToast()
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // const handleCreateTodo = (todo: { title: string; description?: string; dueDate?: string }) => {
-  //   showToast(`Created todo: ${todo.title}`, "success");
-  // }
+  // Default values
+  const defaultTodo:Todo = {
+    id:0,
+    title:"",
+    targetDate:"",
+    targetTime:"",
+    completed:false
+  }
+
+  // States
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editFlag,setEditFlag] = useState(false)
+  const [todoToEdit,setTodoToEdit] = useState<Todo>(defaultTodo)
+
+  // Functions
+  const openNewTodo = ()=>{
+    setEditFlag(false)
+    setIsModalOpen(true)
+  }
+
+  const selectTodoEdit = useCallback((todo: Todo) => {
+    setTodoToEdit(todo);
+    setIsModalOpen(true);
+    setEditFlag(true)
+  }, [setTodoToEdit, setIsModalOpen]);
 
   // Effects
   useEffect(() => {
@@ -27,15 +49,18 @@ function Home() {
           <a className="btn btn-ghost text-xl">TodoApp</a>
         </div>
         <div className="flex-none gap-2">
-          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>New Task</button>
+          <button className="btn btn-primary" onClick={openNewTodo}>New Task</button>
         </div>
       </div>
       
-      <NewTodoModal
+      <NewEditTodoModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        createTodo={addTodo}
         isLoading={loading}
+        isEdit={editFlag}
+        todoToEdit={todoToEdit}        
+        createTodo={addTodo}
+        editTodo={editTodo}
+        onClose={() => setIsModalOpen(false)}
       />
 
       <main className="container mx-auto pt-6">
@@ -47,6 +72,7 @@ function Home() {
           isLoading={loading}
           toggleCompleted={toggleCompleted}
           removeTodo={removeTodo}
+          selectTodoEdit={selectTodoEdit}
           
         />
       </main>

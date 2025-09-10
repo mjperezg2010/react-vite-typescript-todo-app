@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal,LoadingButton } from "@components";
 import { formatDate,nextHourDateTimeInput } from "@utils/date";
 import { useToast } from "@hooks/useToast";
+import type { Todo } from "../types";
 
 interface Props {
   isOpen: boolean;
-  onClose: () => void;
-  createTodo:(title:string,targetDate:string,targetTime:string,observation:string)=>Promise<boolean>;
   isLoading:boolean;
-  // onCreate: (todo: { title: string; description?: string; dueDate?: string }) => void;
+  isEdit:boolean;
+  todoToEdit:Todo;  
+  createTodo:(title:string,targetDate:string,targetTime:string,observation:string)=>Promise<boolean>;
+  editTodo:(todo:Todo)=>Promise<boolean>; 
+  onClose: () => void;
 }
 
-function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
+function NewEditTodoModal({ isOpen,isLoading,isEdit,todoToEdit,createTodo,editTodo,onClose }: Props) {
   // Hooks
   const { showToast } = useToast()
 
@@ -20,6 +23,7 @@ function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
   const [description, setDescription] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>(() => nextHourDateTimeInput());
 
+  // Functions
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
@@ -28,15 +32,30 @@ function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
 
     const targetDate = formatDate(dueDate, "yyyy-MM-dd");
     const targetTime = formatDate(dueDate, "HH:mm");
-    
-    const response = await createTodo(title.trim(), targetDate, targetTime, description.trim())
 
-    if(response) showToast("The new task successfully created!",'success') 
+    let response = false;
 
-    setTitle("");
-    setDescription("");
-    setDueDate(nextHourDateTimeInput());
-    onClose();
+    if (isEdit) {
+      const updated: Todo = {
+        ...todoToEdit,
+        title: title.trim(),
+        targetDate,
+        targetTime,
+        observation:description.trim()
+      };
+      response = await editTodo(updated);
+      if (response) showToast("Changes saved!", "success");
+    } else {
+      response = await createTodo(title.trim(), targetDate, targetTime, description.trim());
+      if (response) showToast("The new task was successfully created!", "success");
+    }
+
+    if (response) {
+      setTitle("");
+      setDescription("");
+      setDueDate(nextHourDateTimeInput());
+      onClose();
+    }
   };
 
   const handleCancel = () => {
@@ -46,11 +65,28 @@ function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
     onClose();
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    if (isEdit && todoToEdit) {
+      // Edit todo: set values from selected todo
+      setTitle(todoToEdit.title ?? "");
+      if (todoToEdit.targetDate && todoToEdit.targetTime) {
+        setDueDate(`${todoToEdit.targetDate}T${todoToEdit.targetTime}`);
+      }
+      setDescription(todoToEdit.observation ?? "");
+    } else {
+      // New todo: reset defaults on open
+      setTitle("");
+      setDescription("");
+      setDueDate(nextHourDateTimeInput());
+    }
+  }, [isOpen, isEdit, todoToEdit]);
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleCancel}
-      title="New Todo"
+      title={isEdit ? "Edit Todo" : "New Todo"}
       actions={
         <>
           <button type="button" className="btn btn-ghost" onClick={handleCancel}>
@@ -64,7 +100,7 @@ function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
             disabled={!title.trim()}
             hideChildrenWhenLoading
           >
-            Create
+            {isEdit ? "Save" : "Create"}
           </LoadingButton>
         </>
       }
@@ -113,4 +149,4 @@ function NewTodoModal({ isOpen, onClose,createTodo,isLoading }: Props) {
   );
 }
 
-export { NewTodoModal };
+export { NewEditTodoModal };

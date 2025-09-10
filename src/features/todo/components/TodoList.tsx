@@ -8,10 +8,10 @@ type Props = {
   isLoading:boolean;
   toggleCompleted: (id: number) => void;
   removeTodo: (id: number) => void;
-
+  selectTodoEdit:(todo:Todo) => void;
 }
 
-function TodoList({todos,isLoading, toggleCompleted,removeTodo}: Props) {
+function TodoList({todos,isLoading, toggleCompleted,removeTodo,selectTodoEdit}: Props) {
     // Hooks
 
     // States
@@ -36,7 +36,8 @@ function TodoList({todos,isLoading, toggleCompleted,removeTodo}: Props) {
               emptyText="No pending tasks. Enjoy your day!"
               isLoading={isLoading}
               toggleCompleted={toggleCompleted}
-              removeTodo={removeTodo}              
+              removeTodo={removeTodo}
+              selectTodoEdit={selectTodoEdit}              
             />
           </div>
 
@@ -55,7 +56,7 @@ function TodoList({todos,isLoading, toggleCompleted,removeTodo}: Props) {
               isLoading={isLoading}              
               toggleCompleted={toggleCompleted}
               removeTodo={removeTodo}
-              
+              selectTodoEdit={selectTodoEdit}
             />
           </div>
 
@@ -74,7 +75,7 @@ function TodoList({todos,isLoading, toggleCompleted,removeTodo}: Props) {
               isLoading={isLoading}              
               toggleCompleted={toggleCompleted}
               removeTodo={removeTodo}
-              
+              selectTodoEdit={selectTodoEdit}
             />
           </div>
       </div>

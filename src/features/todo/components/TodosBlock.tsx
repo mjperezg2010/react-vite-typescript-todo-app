@@ -3,7 +3,7 @@ import { memo, useState, useEffect } from 'react'
 import type { Todo } from '../types'
 
 import { parse, isBefore, isValid, set } from 'date-fns'
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { TrashIcon,PencilSquareIcon } from "@heroicons/react/24/solid";
 import { LoadingButton } from '@components'
 
 type Props = {
@@ -12,7 +12,8 @@ type Props = {
   emptyText: string;
   isLoading:boolean;
   toggleCompleted: (id: number) => void;
-  removeTodo: (id: number) => void;  
+  removeTodo: (id: number) => void;
+  selectTodoEdit:(todo:Todo) => void;  
 }
 
 function TodosBlockComponent({
@@ -21,7 +22,8 @@ function TodosBlockComponent({
   emptyText,
   isLoading,
   toggleCompleted,
-  removeTodo  
+  removeTodo,
+  selectTodoEdit  
 }: Props) {
 
   // States
@@ -61,10 +63,11 @@ function TodosBlockComponent({
 
   return items.length > 0 ? (
     <ul className="list bg-base-100 rounded-box shadow-md max-w-xl mx-auto mt-4">
-      <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">{title}</li>
+      <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">{title}</li> {/*List Title */}
       {items.map((todo) => (
-        <li className="list-row" key={todo.id}>
+        <li className="list-row" key={todo.id}> {/*Todo item */}
           <div className="flex items-center">
+            {/*First List column */}
             <input
               id={`todo-${title.replace(/\s+/g, '-').toLowerCase()}-${todo.id}`}
               name={`todo-${title.replace(/\s+/g, '-').toLowerCase()}-${todo.id}`}
@@ -85,6 +88,7 @@ function TodosBlockComponent({
               }}
             />
           </div>
+          {/*Second List column */}
           <div className={fadingId === todo.id ? 'line-through opacity-60' : ''}>
             <div>{todo.title}</div>
             <div
@@ -93,12 +97,15 @@ function TodosBlockComponent({
                 (!todo.completed && isOverdue(todo) ? "text-error" : "")
               }
             >
+              
               {todo.targetTime} - {formatDate(todo.targetDate)}
+
               {!todo.completed && isOverdue(todo) && (
                 <span className="ml-2 badge badge-error badge-xs">Overdue</span>
               )}
             </div>
           </div>
+          {/*Third List column */}
           <p
             className={
               'list-col-wrap text-xs text-gray-500 ' +
@@ -107,21 +114,33 @@ function TodosBlockComponent({
           >
             Observation: {todo.observation || 'No observations provided.'}
           </p>
-          <div className="ml-2">
-            <div className="tooltip" data-tip="Delete">
-              <LoadingButton
-                className="btn btn-circle"
-                aria-label="Delete todo"
-                onClick={() => {
-                  setDeletingId(todo.id);
-                  removeTodo(todo.id);
-                }}
-                loading={isLoading && deletingId === todo.id}
-                variant="icon"
-              >
-                <TrashIcon className="h-4 w-4" />
-              </LoadingButton>
-            </div>
+          {/*Fourth List column */}          
+          <div className="tooltip" data-tip="Edit">
+            <LoadingButton
+              className="btn btn-circle"
+              aria-label="Edit todo"
+              variant="icon"
+              onClick={()=>{
+                selectTodoEdit(todo)
+              }}
+            >
+              <PencilSquareIcon className="h-4 w-4" />
+            </LoadingButton>
+          </div>
+          {/*Fifth List column */}
+          <div className="tooltip" data-tip="Delete">
+            <LoadingButton
+              className="btn btn-circle"
+              aria-label="Delete todo"
+              onClick={() => {
+                setDeletingId(todo.id);
+                removeTodo(todo.id);
+              }}
+              loading={isLoading && deletingId === todo.id}
+              variant="icon"
+            >
+              <TrashIcon className="h-4 w-4" />
+            </LoadingButton>
           </div>
         </li>
       ))}

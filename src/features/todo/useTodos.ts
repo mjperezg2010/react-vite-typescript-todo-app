@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import type { Todo } from "./types"
 import { fetchTodos,createTodo,updateTodo,deleteTodo } from "./api"
+import { getTodoId } from "@utils/generateId"
 
 export function useTodos() {
     const [todos, setTodos] = useState<Todo[]>([])
@@ -27,13 +28,24 @@ export function useTodos() {
         loadTodos()
     }, [])
 
-    const addTodo = async(newTodo: Todo) => {
+    const addTodo = async(title:string,targetDate:string,targetTime:string,observation:string) => {
+        const newTodo:Todo = {
+            id:getTodoId(todos),
+            title,
+            targetDate,
+            targetTime,
+            completed:false,
+            observation
+
+        }
         setLoading(true)
         try {
             const response = await createTodo(newTodo)
             setTodos((prevTodos) => [...prevTodos, response])
+            return true
         } catch (error) {
             setError("Failed to add todo")
+            return false
         } finally {
             setLoading(false)
         }
@@ -46,26 +58,26 @@ export function useTodos() {
             setTodos((prevTodos) => prevTodos.map(t => 
                 t.id === response.id ? response : t
             ))
+            return true
         } catch (error) {
             setError("Failed to update todo")
+            return false
         } finally {
             setLoading(false)
         }
     }
 
-    const removeTodo = async(toDeleteTodoId: number) => {
+    const removeTodo = useCallback(async (toDeleteTodoId: number) => {
         setLoading(true)
         try{
             const response = await deleteTodo(toDeleteTodoId)
             setTodos((prevTodos) => prevTodos.filter(t => t.id !== response))
-
-        }catch (error) {
+        } catch (error) {
             setError("Failed to delete todo")
-        }
-        finally {
+        } finally {
             setLoading(false)
         }
-    } 
+    }, [])
 
     // Edits the todo optimistically (UI updates before server confirmation)
     const editTodoOptimistic = useCallback(async (updatedTodo: Todo) => {
@@ -104,7 +116,6 @@ export function useTodos() {
         }
     }, [])
 
-       
 
     return { 
         // state

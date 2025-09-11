@@ -51,4 +51,4 @@ function Modal({ isOpen, onClose, title, children, actions }: ModalProps) {
   );
 }
 
-export default Modal;
+export {Modal};

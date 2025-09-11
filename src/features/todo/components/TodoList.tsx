@@ -5,10 +5,13 @@ import styles from './TodoList.module.css'
 
 type Props = {
   todos: Todo[];
+  isLoading:boolean;
   toggleCompleted: (id: number) => void;
+  removeTodo: (id: number) => void;
+  selectTodoEdit:(todo:Todo) => void;
 }
 
-function TodoList({todos, toggleCompleted}: Props) {
+function TodoList({todos,isLoading, toggleCompleted,removeTodo,selectTodoEdit}: Props) {
     // Hooks
 
     // States
@@ -30,8 +33,11 @@ function TodoList({todos, toggleCompleted}: Props) {
             <TodosBlock
               title="Pending tasks"
               items={pendingTodos}
-              toggleCompleted={toggleCompleted}
               emptyText="No pending tasks. Enjoy your day!"
+              isLoading={isLoading}
+              toggleCompleted={toggleCompleted}
+              removeTodo={removeTodo}
+              selectTodoEdit={selectTodoEdit}              
             />
           </div>
 
@@ -46,8 +52,11 @@ function TodoList({todos, toggleCompleted}: Props) {
             <TodosBlock
               title="Completed tasks"
               items={completedTodos}
-              toggleCompleted={toggleCompleted}
               emptyText="No completed tasks yet."
+              isLoading={isLoading}              
+              toggleCompleted={toggleCompleted}
+              removeTodo={removeTodo}
+              selectTodoEdit={selectTodoEdit}
             />
           </div>
 
@@ -62,8 +71,11 @@ function TodoList({todos, toggleCompleted}: Props) {
             <TodosBlock
               title="All tasks"
               items={todos}
-              toggleCompleted={toggleCompleted}
               emptyText="No tasks yet. Create your first one!"
+              isLoading={isLoading}              
+              toggleCompleted={toggleCompleted}
+              removeTodo={removeTodo}
+              selectTodoEdit={selectTodoEdit}
             />
           </div>
       </div>

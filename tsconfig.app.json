@@ -18,6 +18,7 @@
     "paths": {
       "@features/*": ["features/*"],
       "@components/*": ["components/*"],
+      "@components": ["components/index.ts"],
       "@pages/*": ["pages/*"],
       "@hooks/*": ["hooks/*"],
       "@utils/*": ["utils/*"]
